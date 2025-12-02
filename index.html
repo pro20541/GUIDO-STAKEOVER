@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Guido's Takeover</title>
+<style>
+    body {
+        background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+        color: #00ff99;
+        font-family: 'Courier New', monospace;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100vh;
+    }
+
+    #output {
+        background-color: rgba(0, 0, 0, 0.7);
+        border: 2px solid #00ff99;
+        border-radius: 10px;
+        padding: 20px;
+        width: 80%;
+        max-width: 800px;
+        height: 60%;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        box-shadow: 0 0 20px #00ff99;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #userInput {
+        padding: 10px;
+        font-size: 18px;
+        width: 400px;
+        border: 2px solid #00ff99;
+        border-radius: 5px;
+        margin-top: 20px;
+        background: rgba(0,0,0,0.8);
+        color: #00ff99;
+        outline: none;
+        box-shadow: 0 0 10px #00ff99 inset;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 18px;
+        margin-left: 10px;
+        border: 2px solid #00ff99;
+        border-radius: 5px;
+        background: rgba(0,0,0,0.8);
+        color: #00ff99;
+        cursor: pointer;
+        box-shadow: 0 0 10px #00ff99;
+        transition: all 0.2s ease;
+    }
+
+    button:hover {
+        background: #00ff99;
+        color: #000;
+        box-shadow: 0 0 20px #00ff99;
+    }
+
+    .line {
+        opacity: 0;
+        animation: fadeIn 0.5s forwards;
+    }
+
+    @keyframes fadeIn {
+        to { opacity: 1; }
+    }
+</style>
+</head>
+<body>
+
+<div id="output"></div>
+<div>
+    <input type="text" id="userInput" placeholder="Type your response here" autofocus>
+    <button onclick="submitResponse()">Enter</button>
+</div>
+
+<script>
+const output = document.getElementById('output');
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function start() {
+    await typeLine("Guido, the polite AI, has taken over your computer systems.");
+    await typeLine("Quick, stop Guido from taking over.");
+    await typeLine("When Guido greets you, politely, you must respond (type any letters then click enter) with the correct response.");
+    await typeLine("You must do this over and over until Guido is SORRY.");
+    await typeLine("Guido will always respond until he is defeated.");
+}
+
+function append(text) {
+    const line = document.createElement('div');
+    line.textContent = text;
+    line.classList.add('line');
+    output.appendChild(line);
+
+    // Keep scroll at the bottom (new lines push old ones up)
+    output.scrollTop = output.scrollHeight;
+}
+
+async function typeLine(text) {
+    let line = '';
+    for (let ch of text) {
+        line += ch;
+        // Show partial line as typing
+        output.lastChild ? output.lastChild.textContent = line : append(line);
+        await sleep(20);
+    }
+    append(line); // Ensure full line added
+}
+
+function caesarCipher(s, shift) {
+    let out = '';
+    for (let ch of s) {
+        if ('A' <= ch && ch <= 'Z') {
+            out += String.fromCharCode((ch.charCodeAt(0) - 65 + shift + 26) % 26 + 65);
+        } else if ('a' <= ch && ch <= 'z') {
+            out += String.fromCharCode((ch.charCodeAt(0) - 97 + shift + 26) % 26 + 97);
+        } else {
+            out += ch;
+        }
+    }
+    return out;
+}
+
+function isLowercase(ch) {
+    return 'a' <= ch && ch <= 'z';
+}
+
+function randomBit() {
+    return Math.random() < 0.5 ? 0 : 1;
+}
+
+function printLargeFace() {
+    append(`
+      _____
+    /     \\
+   | 0   0 |
+   |   ^   |
+    \\ \\_/ /
+     \\___/
+    `);
+}
+
+function guido(ans) {
+    let result = "";
+    for (let x of ans) {
+        if (isLowercase(x)) {
+            if (randomBit() === 1) {
+                result += caesarCipher(x, 1);
+            } else {
+                result += caesarCipher(x, -1);
+            }
+        } else {
+            result += caesarCipher(x, 1);
+        }
+    }
+
+    if (result === "SORRY") {
+        return true;
+    }
+    append("Interesting response: " + result);
+    return false;
+}
+
+let gameOver = false;
+
+async function initGame() {
+    await start();
+    append("\nHello, I'm Guido.");
+}
+
+function submitResponse() {
+    if (gameOver) return;
+
+    const input = document.getElementById('userInput');
+    const ans = input.value.trim();
+    input.value = '';
+
+    if (guido(ans)) {
+        gameOver = true;
+        append("Good job. You have saved Guido.");
+        setTimeout(() => {
+            append("Fun fact, Guido van Rossum is the creator of Python, the programming language used to make this problem.");
+            printLargeFace();
+            append("You have earned your points.");
+        }, 500);
+    } else {
+        append("\nHello, I'm Guido.");
+    }
+}
+
+// Start game automatically
+initGame();
+</script>
+
+</body>
+</html>
