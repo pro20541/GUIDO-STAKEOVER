@@ -1,5 +1,3 @@
-
-<script>
 const output = document.getElementById('output');
 
 function sleep(ms) {
@@ -22,22 +20,32 @@ async function start() {
         "You must do this over and over until Guido is SORRY.",
         "Guido will always respond until he is defeated."
     ];
+
     for (let line of lines) {
         append(line);
-        await sleep(2000); // pause like Python
+        await sleep(2000);
     }
 }
 
 function caesarCipher(s, shift) {
     return s.split('').map(ch => {
-        if ('A' <= ch && ch <= 'Z') return String.fromCharCode((ch.charCodeAt(0)-65+shift+26)%26+65);
-        if ('a' <= ch && ch <= 'z') return String.fromCharCode((ch.charCodeAt(0)-97+shift+26)%26+97);
+        if ('A' <= ch && ch <= 'Z') {
+            return String.fromCharCode((ch.charCodeAt(0) - 65 + shift + 26) % 26 + 65);
+        }
+        if ('a' <= ch && ch <= 'z') {
+            return String.fromCharCode((ch.charCodeAt(0) - 97 + shift + 26) % 26 + 97);
+        }
         return ch;
     }).join('');
 }
 
-function isLowercase(ch) { return 'a' <= ch && ch <= 'z'; }
-function randomBit() { return Math.random() < 0.5 ? 0 : 1; }
+function isLowercase(ch) {
+    return 'a' <= ch && ch <= 'z';
+}
+
+function randomBit() {
+    return Math.random() < 0.5 ? 0 : 1;
+}
 
 function printLargeFace() {
     append(`
@@ -52,14 +60,17 @@ function printLargeFace() {
 
 function guido(ans) {
     let result = "";
+
     for (let x of ans) {
         if (isLowercase(x)) {
-            result += randomBit() ? caesarCipher(x,1) : caesarCipher(x,-1);
+            result += randomBit() ? caesarCipher(x, 1) : caesarCipher(x, -1);
         } else {
-            result += caesarCipher(x,1);
+            result += caesarCipher(x, 1);
         }
     }
+
     if (result === "SORRY") return true;
+
     append("Interesting response: " + result);
     return false;
 }
@@ -73,6 +84,7 @@ async function initGame() {
 
 function submitResponse() {
     if (gameOver) return;
+
     const input = document.getElementById('userInput');
     const ans = input.value.trim();
     input.value = '';
@@ -80,23 +92,22 @@ function submitResponse() {
     if (guido(ans)) {
         gameOver = true;
         append("Good job. You have saved Guido.");
+
         setTimeout(() => {
             append("Fun fact, Guido van Rossum is the creator of Python, the programming language used to make this problem.");
             printLargeFace();
-            append("The flag is the last thing you typed that got you to this screen.");//beware html viewers
+            append("The flag is the last thing you typed that got you to this screen.");
         }, 500);
+
     } else {
         append("Hello, I'm Guido.");
     }
 }
 
-// Make Enter key submit responses
-document.getElementById('userInput').addEventListener('keydown', function(e) {
+document.getElementById('userInput').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
         submitResponse();
     }
 });
 
-// Start the game
 initGame();
-</script>
